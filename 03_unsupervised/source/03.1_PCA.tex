@@ -406,7 +406,7 @@ columns, so $P=[\mathbf{e}_1,\mathbf{e}_2,\ldots,\mathbf{e}_n$. As we
   eigenvectors, it is convenient in this context to make them unit length. 
 For the example above then:
   \begin{equation}
-    P=\sqrt{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1\end{pmatrix}
+    P=\frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1\end{pmatrix}
   \end{equation}
   and
 \begin{equation}
@@ -531,7 +531,7 @@ What happens if we do a change of variables, imagine $\mathbf{x}=P\mathbf{y}$
 &=
 \mathbb{E}\!\left[\mathbf{x}\mathbf{x}^{\mathsf T}\right]\\
 &=
-\mathbb{E}\!\left[P\mathbf{y}\mathbf{y}^{\mathsf T}P^{mathsf T}\right]=P\mathbb{E}\!\left[\mathbf{y}\mathbf{y}^{\mathsf T}\right]P^{\mathsf T}\\
+\mathbb{E}\!\left[P\mathbf{y}\mathbf{y}^{\mathsf T}P^{\mathsf T}\right]=P\mathbb{E}\!\left[\mathbf{y}\mathbf{y}^{\mathsf T}\right]P^{\mathsf T}\\
 &=P\Sigma_{\mathbf{y}}P^{\mathsf T}
 \end{aligned}
 \end{equation}

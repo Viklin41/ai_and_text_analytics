@@ -8,8 +8,8 @@
 \usepackage{fancyhdr}
 \usepackage{bm}
 \pagestyle{fancy}
-\lfoot{\texttt{ematm0067.github.io} / \texttt{ematm0044.github.io}}
-\lhead{Introduction to AI - 02.3\_regression - Conor}
+\lfoot{\texttt{ematm0067.github.io} }
+\lhead{Introduction to AI - 05.1\_regression - Conor}
 \rhead{\thepage}
 \cfoot{}
 
@@ -26,7 +26,7 @@
 \section*{Linear regression.} 
 
 Recently when doing some research, the details of which are not
-relevant here, I measured the relationship between two variables, here
+relevant here\footnote{Here, `recently' refers to when I first wrote the first version of these notes, the work mentioned eventually appeared as \texttt{doi.org/10.1371/journal.pcsy.0000030} where these data, or something like them, appear as Figure 8.}, I measured the relationship between two variables, here
 I will just call them $x$ and $y$. The data look like:
 \begin{center}
 \begin{tabular}{@{}ccccccccc@{}}
@@ -42,7 +42,7 @@ roughly like
 \end{equation}
 but, as is clear from the scatterplot
 \begin{center}
-  \includegraphics[]{02.3_points.png}
+  \includegraphics[ext=.png]{05_1_points.png}
   \end{center}
 that it looks a lot more like
 \begin{equation}
@@ -60,21 +60,21 @@ a linear model and, if they are, linear models are very easy to use,
 so it is often useful to try a linear model first!
 
 The approach we take to deciding what we mean by the `best' line is to
-think of the line as a prediction, we think of it as model for the
+think of the line as a prediction. We think of it as model for the
 data, so for each $x$ we have a prediction:
 \begin{equation}
   \hat{y}=mx+c
 \end{equation}
 and this prediction has an error $|\hat{y}-y|$.
 \begin{center}
-  \includegraphics[]{02.3_points_line.png}
-  \end{center}
+  \includegraphics[ext=.png]{05_1_points_line.png}
+ \end{center}
 It is typical for models to not make completely accurate predictions,
 we imagine that there is some process that is largely responsible for
 generating $y$ from $x$ but there is noise: we know that we should
 expect the position for an object moving at a constant speed $v$ to be
 $vt$, but we also accept that in practice wind or whatever will make
-that approximate and our measurement of the position will not be
+that approximate and our measurement of the position and speed will not be
 completely accurate. Nonetheless, we clearly want to minimize the
 noise.
 
@@ -84,7 +84,9 @@ idea would be to sum the individual errors:
   \mathcal{E}_1=\frac{1}{n}\sum_i |\hat{y}_i-y|
 \end{equation}
 where, in the obvious way $\hat{y}_i=mx_i+c$. In fact this would be
-very inconvenient because the absolute value can be an awkward object; it has long been common to use the \textsl{root mean square error} instead:
+very inconvenient because the absolute value can be an awkward object;
+it has long been common to use the \textsl{root mean square error}
+instead:
 \begin{equation}
   \mathcal{E}_2=\sqrt{\frac{1}{n}\sum_i (\hat{y}_i-y)^2}
 \end{equation}
@@ -92,12 +94,15 @@ We will see shortly that using the square makes the mathematics of
 finding $m$ and $c$ easier, but picking $\mathcal{E}_2$ over
 $\mathcal{E}_1$, or indeed over any other error function including
 \begin{equation}
-  \mathcal{E}_p=\sqrt[p]{\frac{1}{n}\sum_i (\hat{y}_i-y)^2}
+  \mathcal{E}_p=\sqrt[p]{\frac{1}{n}\sum_i (\hat{y}_i-y)^p}
 \end{equation}
-In fact, along with the practical impetus to using $\mathcal{E}_2$,
-there is a principled argument based on models of the noise and the
-nature of prediction which describes reasonably generic circumstances
-where it is the best choice. We will not go into that here.
+or something based on information theory, is hiding some idea about
+what sort of processes we think are at work in generating the data, or
+what so or errors we can tolerate best when using the model. In fact,
+along with the practical impetus to using $\mathcal{E}_2$, there is a
+principled argument based on models of the noise and the nature of
+prediction which describes reasonably generic circumstances where it
+is the best choice. We will not go into that here.
 
 So, we have decided our task is to pick the $m$ and $c$ that minimize
 $\mathcal{E}_2$. In fact, we will consider $\mathcal{E}_2^2$, the
@@ -118,17 +123,21 @@ $\mathcal{E}_2^2$ is should be clear that any stationary point is a
 minimum, this is easy enough to prove with second order derivatives,
 but we won't go into that here.
 
-The derivatives are easy enough using the chain rule, to remind you,
-if $f(x)=d(u(x))$ then the rate of change of $f$ with $x$ is the
+The derivatives are easy enough using the chain rule. To remind you,
+if $f(x)=f(u(x))$ then the rate of change of $f$ with $x$ is the
 multiple of how $f$ changes with $u$ and how $u$ changes with $x$:
 \begin{equation}
 \frac{df}{dx}=\frac{df}{du}\frac{du}{dx}
 \end{equation}
 The chain rule is easy to remember because it sort of makes sense but
 it is also incredibly powerful, allowing any calculation you can
-perform to be differentiated. As an aside this is the essence of
-\texttt {autograd}, the automatic differentiation routines that make
-modern machine learning possible. 
+perform to be differentiated. 
+
+As an aside this is the essence of \texttt{autograd}, the automatic
+differentiation routines that make modern machine learning possible:
+automatic differentiation relies on the simple observation that, in
+general, if a calculation is expressed as a series of smaller
+calculation, one on top of the other, then the chain rule means that the derivative of the overall calculation can be expressed in terms of the individual steps: in short, in some vague way, if it can be calculated, if can be differenciated.
 
 In the case here let $u_i=mx_i+c-y_i$ so
 \begin{equation}
@@ -169,9 +178,26 @@ and
 \begin{equation}
 c=\bar{y}-m\bar{x}
 \end{equation}
-Thus $m$ depends on the sample average of the auto- and cross-correlation.
 
-Lets do the example above! There are eight samples with
+Note that $m$ depends on the sample average of the auto- and
+cross-correlation; it could equally well have been written using
+different notations:
+\begin{equation}
+m
+= \frac{\langle (x_i-\bar{x})(y_i-\bar{y})\rangle_i}{\langle (x_i-\bar{x})^2\rangle_i}
+= \frac{\mathbb{E}_i\!\left[(x_i-\mathbb{E}_i[x_i])(y_i-\mathbb{E}_i[y_i])\right]}{\mathbb{E}_i\!\left[(x_i-\mathbb{E}_i[x_i])^2\right]}
+= \frac{\operatorname{Cov}(x,y)}{\operatorname{Var}(x)} .
+\end{equation}
+It can seem annoying to have all these different notations, but it is
+useful to be comfortable with changing notation, partly because
+different people use different systems of notation, but also because
+different notations represent different insights and different ways to
+think about what is happening. Here, the angle brackets notation comes
+from a more geometric tradition, emphasising projection of the data
+down to different directions, the expectation values and so represent
+a statistical approach. It is all the same mathematics though.
+
+Anyway, lets do the example above! There are eight samples with
 \begin{equation}
 \bar{x}=\frac{8+9+10+11+12+13+14+15}{8}=11.5
 \end{equation}
@@ -181,11 +207,11 @@ and
 \end{equation}
 Similarly
 \begin{equation}
-\langle (x_i-\bar{x})(y_i-\bar{y})\rangle_i=\frac{1}{8}\sum_i(x_i-11.5)(y_i-83.625)=\approx 37.56
+\langle (x_i-\bar{x})(y_i-\bar{y})\rangle_i=\frac{1}{8}\sum_i(x_i-11.5)(y_i-83.625)\approx 37.56
 \end{equation}
 and
 \begin{equation}
-\langle (x_i-\bar{x})^2\rangle_i=\frac{1}{8}\sum_i(x_i-11.5)^2=\approx 5.25
+\langle (x_i-\bar{x})^2\rangle_i=\frac{1}{8}\sum_i(x_i-11.5)^2\approx 5.25
 \end{equation}
 giving $m=7.1548$ and $c=1.3452$.
 
@@ -279,7 +305,37 @@ way, we can do the same sort of calculation as before to find an
 equation for all the $\beta$s; we won't go through the details here,
 but it really follows the same strategy as before.
 
-As one final note, regression models often need to be
+Of course, when we move to more dimesions we immeadiately start to see
+the limitation of picking a regression model; for two dimensions for example
+\begin{equation}
+y=\beta_0+\beta_1x_1+\beta_2x_2
+\end{equation}
+we see that according to the model the way $y$ changes with $x_2$ for
+example, doesn't depending on $x_1$: to make that explicit, if we add
+one to $x_2$ that adds $\beta_2$ to $y$, no matter what the value of
+$x_1$ is. It is easy to imagine data where that would be wrong, where,
+for example,
+\begin{equation}
+y=\beta_0+\beta_1x_1+\beta_2x_2+\beta_{12}x_1x_2
+\end{equation}
+would be a better model; in statistics this is called an
+\emph{interaction term} and interactions like this are often of huge
+interest in psychology, sociology and economics where great effort is
+often put in deciding whether an interaction term is `statistically
+significant'.  The main point, for now, is that the linear model
+$y=mx+c$ is just a starting point and often a surprisingly good one,
+but in practice, in `classical data analysis' we often want to
+consider a broader class of models while avoiding the danger of just
+wandering in model space or finding ourselves with more model
+parameters than our data can hope to pin down. As we will see, neural
+networks can be considered as a way to parameterize models and
+optimize them. It is interesting to consider how our mythical
+classical data analysis, with its concern for parameter interpretation
+and statistical significance, relates to neural networks. However, we
+will first ask how, in general, we can fit more complex models, that
+is, how we find the $\beta$s, this often, even usually, involves gradient flow.
+
+As one final note before going on to gradient flow, regression models often need to be
 regularized. What that means is that there is not really enough data
 and outliers can have a disproportionate effect on the result. A
 regularization approach adds some assumptions about the behaviour of
@@ -298,7 +354,7 @@ Here is what that function looks like, using a contour plot, the
 curves mark equal values of the error across the $mc$-plane, just as
 contours on a map mark places that are at the same height:
 \begin{center}
-  \includegraphics[]{02.3_contour.png}
+  \includegraphics[ext=.png]{05_1_contour.png}
   \end{center}
 Note that for illustrative purposes the contours are not equally
 spaced. The mathematics we did brought us to the very bottom of the
@@ -338,7 +394,7 @@ The error function we have been using, from some real data, is very oblong-ish a
 \end{equation}
 The contours are
 \begin{center}
-  \includegraphics[]{02.3_simple_contour.png}
+  \includegraphics[ext=.png]{05_1_simple_contour.png}
   \end{center}
 Now the gradient is easy to calculate:
 \begin{equation}
@@ -346,13 +402,13 @@ Now the gradient is easy to calculate:
 \end{equation}
 and we can plot the gradient descent with $\eta=0.1$ and starting point $(0,0)$
 \begin{center}
-  \includegraphics[]{02.3_gradient.png}
+  \includegraphics[ext=.png]{05_1_gradient.png}
   \end{center}
 If $\eta=0.43$ the gradient descent begins to jump backwards and
 forwards across the minimum, bigger values lead to even more
 disasterously erratic behaviour.
 \begin{center}
-  \includegraphics[]{02.3_gradient_big_eta.png}
+  \includegraphics[ext=.png]{05_1_gradient_big_eta.png}
   \end{center}
 
 

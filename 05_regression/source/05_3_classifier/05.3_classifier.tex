@@ -78,13 +78,69 @@ modelled the probability using a logistic function:
   p(\text{rural})=\sigma(\beta_0+\beta_1x_1+\beta_2x_2)
 \end{equation}
 where, in our current context, $x_1$ is the fraction voting Fianna
-F\'{a}il and $x_2$ the fraction voting Fine Gael. We found values for
-the $\beta$s by optimising a loss function, the log-likelihood. With
-these parameters we can then estimate a probability that any point is
-`rural'; for a binary classified we can dump this nicety and just
-predict that a constituency is rural if $p(\text{rural})\ge 0.5$. In
-fact, $\sigma(0)=0.5$ so the decision boundary where
-$\hat{p}(\text{rural})=0.5$ corresponds to
+F\'{a}il and $x_2$ the fraction voting Fine Gael.
+
+Next we need a loss function; as in the other examples we have looked
+at there are different ideas of what the loss function should be. A
+common example is the log-likelihood. To describe this we will refer
+to the probability as the \emph{model}; in this terminology the model
+is a map from a data point $\mathbf{x}^a$, where I am using $a$ as a
+trial index to label different data points,\footnote{Of course in
+computer science we would use this index to make a matrix $x_{ia}$ but
+I am falling into the mathematicians habit of using different sorts of
+indices when they mean different sorts of things, a trial index is
+different from the index for the components of $\mathbf{x}$,
+mathematicians like to come up with notations that express differences
+like that, computer scientists, in contrast want to translate
+everything in code and code doesn't care about the background for an
+index, an index is just a way of accessing different compenents of an
+array.} to a probability. For a linear classifier the model is
+parameterized by the linear coefficients $\beta_0$, $\beta_1$ and so
+on. In our case
+\begin{equation}
+  \mathbf{x}^a\mapsto p(\mathbf{x}^a|\beta_0,\beta_1,\beta_2)
+\end{equation}
+In a full Bayesian treatment, we might ask how probable the model is
+given the data: $p(\beta_0,\beta_1,\beta_2|\mathbf{x}^2)$, but this
+can be difficult to calculate, it involves Bayesian inversion which
+might require sums or integrals which often aren't tractible. Instead
+we use the likelihood.  The likelihood is the probability of the data
+for the model; this is sort of back-to-front, we can ask ``how likely
+is the data given the model'.
+
+In the obvious notation and using our case as template example
+\begin{equation}
+  L=\prod_{a\in\text{rural}}p(\mathbf{x}^a)\prod_{a\in\text{urban}}[1-p(\mathbf{x}^a)]
+\end{equation}
+where I have writen $p(\mathbf{x})$ for
+$p(\mathbf{x}|\beta_0,\beta_1,\beta_2)$ and using the fact that in the
+obvious way, if the model says the probability of rural if $p$ then it
+is giving the probability of urban as $1-p$. Finally this involves
+lots of multiplications, this is bad for lots of reasons, but in this
+context the most important is that the probabilities will all be less
+then one and so if there is a lot of data $L$ will be tiny, a bad
+property for something being stored on a computer with finite
+accuracy. However, ever since John Napier\footnote{John Napier
+invented logs as a way to speed up calculations, he saw the time that
+people spent multiplying as a modal challenge, it took time from them
+they could be using to think about God. He also invented an early
+version of the slide-rule which was called Napier's bones and
+calculated the date of the end of the world, between 1688 and 1700 he
+was wrong about that, which is good, I guess.}  published \emph{Mirifici
+Logarithmorum Canonis Descriptio} in 1614 we've known how to get around
+this, we take the log, so the log-likelihood is
+\begin{equation}
+  \log{L}=\sum_{a\in\text{rural}}\log{p(\mathbf{x}^a)}+\sum_{a\in\text{urban}}\log{[1-p(\mathbf{x}^a]}
+\end{equation}
+This is big for a good choice of $\beta$s, so we use minus it, the
+negative log-likelihood as an objective function.
+
+We found values for the $\beta$s by optimising this loss
+function. With these parameters we can then estimate a probability
+that any point is `rural'; for a binary classified we can dump this
+nicety and just predict that a constituency is rural if
+$p(\text{rural})\ge 0.5$. In fact, $\sigma(0)=0.5$ so the decision
+boundary where $\hat{p}(\text{rural})=0.5$ corresponds to
 \begin{equation}
   \beta_0+\beta_1x_1+\beta_2x_2=0
 \end{equation}

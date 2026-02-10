@@ -1,0 +1,5 @@
+for next year:
+
+1. try the network on other data with different decision boundaries, eg class a for |x_1+x_2|>1
+
+2. look at what the early layers are doing!

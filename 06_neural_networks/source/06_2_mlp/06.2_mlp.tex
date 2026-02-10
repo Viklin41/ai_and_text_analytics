@@ -128,7 +128,9 @@ and, almost as before
 \begin{equation}
   y=\sigma(\sum_j w^2_j h_j+b^2)
 \end{equation}
-where, since we want $y$ to be a probability, we continue to use a logistic function for the activation. We have a wider choice for $\phi(r)$, a common choice is the ReLU:
+where, since we want $y$ to be a probability, we continue to use a
+logistic function for the activation. We have a wider choice for
+$\phi(r)$, a common choice is the ReLU:
 \begin{equation}
   \phi(r)=\left\{\begin{array}{ll}r&r\ge 0\\0&\text{otherwise}\end{array}\right.
 \end{equation}
@@ -145,11 +147,16 @@ and
 \begin{equation}
   y=\sigma.(\mathbf{w}\cdot\mathbf{h}+b^2)
 \end{equation}
-I have used the `broadcast' notation from Julia, if $f:\textbf{R}\rightarrow\textbf{R}$ is a function defined on scalars then we lift this to a function on vectors componentwise:
+I have used the `broadcast' notation from Julia, if
+$f:\textbf{R}\rightarrow\textbf{R}$ is a function defined on scalars
+then we lift this to a function on vectors componentwise:
 \begin{equation}
   f.(\textbf{x})=[f(x_1),f(x_2),\ldots,f(x_n)
 \end{equation}
-Mostly this is just me being annoying since I spent time with people who worry too much about notation, most people don't bother with the dot; it is important not to get too hung up on notation, but also not to be too lazy about it either!
+Mostly this is just me being annoying since I spent time with people
+who worry too much about notation, most people don't bother with the
+dot; it is important not to get too hung up on notation, but also not
+to be too lazy about it either!
 
 The main thing is we still have a function $y(\mathbf{x};\theta)$ but
 it is a much more complicated function and has lots more parameters
@@ -195,7 +202,9 @@ less. This would not be possible with a linear classifier and so I tried this
 
 \end{tikzpicture}
 \end{center}
-with 400 points, half red and half blue. It didn't seem to work either, the functions it could produce weren't complicated enough, so I expanded the network further to this:
+with 400 points, half red and half blue. It didn't seem to work
+either, the functions it could produce weren't complicated enough, so
+I expanded the network further to this:
 \begin{center}
 \begin{tikzpicture}[thick, scale=1.4, every node/.style={scale=1.2}]
 
@@ -242,15 +251,15 @@ with 400 points, half red and half blue. It didn't seem to work either, the func
 The two hidden layers use a ReLU activation.
 
 With this MLP, with two hidden layers, the classifier works, in
-Fig.~\ref{fig:mlp} I have plotted $y$, the estimated probability that a point is
-from the $a$ class, as a function of position. In other words I
-randomly produce 200 points whose distance from the center is less
-than one, the $a$ points, and another 200 points where the distance is
-greater than one, the $b$ points. I train the neural network to
-classify these points, with $y$ near one corresponding to an $a$
-point, by training the neural network I mean fixing the values of the
-parameters $\theta$, in this case this is all the weights for the
-links from the input to the first hidden layer, $2\times 4=8$ of
+Fig.~\ref{fig:mlp} I have plotted $y$, the estimated probability that
+a point is from the $a$ class, as a function of position. In other
+words I randomly produce 200 points whose distance from the center is
+less than one, the $a$ points, and another 200 points where the
+distance is greater than one, the $b$ points. I train the neural
+network to classify these points, with $y$ near one corresponding to
+an $a$ point, by training the neural network I mean fixing the values
+of the parameters $\theta$, in this case this is all the weights for
+the links from the input to the first hidden layer, $2\times 4=8$ of
 these, the biases for the first hidden layer, the weights between the
 hidden layers, the biases for the second hidden layer and, finally,
 the weights from the second hidden layer to the output and the bias
@@ -258,7 +267,17 @@ for the output. This makes $8+4+8+2+2+1=25$ parameters in all. How I
 fix these values is the subject of the next note! Finally, to make the
 picture I plot a heatmap for the map from $\textbf{x}$, the input, to
 $\textbf{y}$, the output. As you can see it is a pretty good
-approximation of the circle.
+approximation of the circle; I amn't sure why it is a hexagon!
+
+Of course, 25 parameters is a lot. If we knew the structure of the
+date we could fit a circle using something like
+\begin{equation}
+  y=\sigma((x_1-w_1)^2 + (x_2-w_2)^2-b)
+\end{equation}
+and this would be easier to fit since there are only three
+parameters. However, this would only work well for data where the
+decision boundary is a circle; the larger model, the one based on a
+neural network works for all sorts of decision boundaries.
 
 \begin{figure}[thb]
 \begin{center}
